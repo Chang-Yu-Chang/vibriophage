@@ -1750,34 +1750,44 @@ display: none;
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#main-model" id="toc-main-model"><span class="toc-section-number">1</span> Main model</a></li>
+<li><a href="#run-the-model" id="toc-run-the-model"><span class="toc-section-number">2</span> Run the model</a></li>
+</ul>
+</div>
 
 <!-- rnb-text-begin -->
-<p>where the total number of human population is <span class="math inline">\(N = S+ I +R\)</span></p>
+<div id="main-model" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Main model</h1>
 <p>Without half-saturation</p>
 <p><span class="math display">\[
 \begin{aligned}
-\frac{dS}{dt} &amp;= b N - \delta S - \beta V S + \omega R \\
+\frac{dS}{dt} &amp;= b N + \omega R - \delta S - \beta V S  \\
 \frac{dI}{dt} &amp;= \beta V S - (\gamma + \delta_I + \delta)I \\
 \frac{dR}{dt} &amp;= \gamma I - (\omega + \delta) R \\
 \frac{dV}{dt} &amp;= \sigma I + \rho Z_V - c \lambda V Z_F - \mu V P -
 \delta_V V \\
 \frac{dP}{dt} &amp;= \tau \mu VP - \delta_P P\\
-\frac{dZ_F}{dt} &amp;= \eta \alpha P (Z_F + Z_V) - \lambda V Z_F -
+\frac{dZ_F}{dt} &amp;= \eta \alpha X (Z_F + Z_V) - \lambda V Z_F -
 \delta_Z Z_F\\
 \frac{dZ_V}{dt} &amp;= \lambda V Z_F - \delta_Z Z_V\\
 \frac{dX}{dt} &amp;= r X (1 - \frac{X}{K}) - \alpha X (Z_V + Z_F)\\
 \end{aligned}
 \]</span></p>
+<p>where the total number of human population is <span class="math inline">\(N = S+ I +R\)</span></p>
 <table>
 <colgroup>
+<col width="4%" />
 <col width="9%" />
-<col width="51%" />
-<col width="29%" />
-<col width="6%" />
+<col width="50%" />
+<col width="27%" />
+<col width="5%" />
 <col width="2%" />
 </colgroup>
 <thead>
 <tr class="header">
+<th align="center">Type</th>
 <th align="center">Parameter</th>
 <th align="left">Description</th>
 <th align="center">Dimensions</th>
@@ -1787,6 +1797,7 @@ display: none;
 </thead>
 <tbody>
 <tr class="odd">
+<td align="center">SIR</td>
 <td align="center"><span class="math inline">\(b\)</span></td>
 <td align="left">Natural birth/immigration rate of human</td>
 <td align="center">day<sup>-1</sup></td>
@@ -1795,6 +1806,7 @@ display: none;
 <td align="center">XX</td>
 </tr>
 <tr class="even">
+<td align="center">SIR</td>
 <td align="center"><span class="math inline">\(\delta\)</span></td>
 <td align="left">Natural death/migration rate of human</td>
 <td align="center">day<sup>-1</sup></td>
@@ -1803,13 +1815,15 @@ display: none;
 <td align="center">XX</td>
 </tr>
 <tr class="odd">
+<td align="center">SIR</td>
 <td align="center"><span class="math inline">\(\beta\)</span></td>
 <td align="left">Transmission rate via bacteria</td>
 <td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.0214\)</span></td>
+<td align="center"><span class="math inline">\(0.214\)</span></td>
 <td align="center">XX</td>
 </tr>
 <tr class="even">
+<td align="center">SIR</td>
 <td align="center"><span class="math inline">\(\omega\)</span></td>
 <td align="left">Rate of immunity loss of recovered individuals</td>
 <td align="center">day<sup>-1</sup></td>
@@ -1817,6 +1831,7 @@ display: none;
 <td align="center">XX</td>
 </tr>
 <tr class="odd">
+<td align="center">SIR</td>
 <td align="center"><span class="math inline">\(\gamma\)</span></td>
 <td align="left">Recovery rate of infected human</td>
 <td align="center">day<sup>-1</sup></td>
@@ -1824,6 +1839,7 @@ display: none;
 <td align="center">XX</td>
 </tr>
 <tr class="even">
+<td align="center">SIR</td>
 <td align="center"><span class="math inline">\(\delta_I\)</span></td>
 <td align="left">Induced death rate caused by infection</td>
 <td align="center">day<sup>-1</sup></td>
@@ -1831,13 +1847,15 @@ display: none;
 <td align="center">XX</td>
 </tr>
 <tr class="odd">
+<td align="center">Vibriophage</td>
 <td align="center"><span class="math inline">\(\sigma\)</span></td>
 <td align="left">Bacterial shedding rate by infected human</td>
 <td align="center">cells L<sup>-1</sup> day<sup>-1</sup> per person</td>
-<td align="center"><span class="math inline">\(10\)</span>-<span class="math inline">\(10^{-4}\)</span></td>
+<td align="center"><span class="math inline">\(10\)</span>-<span class="math inline">\(10^{4}\)</span></td>
 <td align="center">XX</td>
 </tr>
 <tr class="even">
+<td align="center">Vibriophage</td>
 <td align="center"><span class="math inline">\(\rho\)</span></td>
 <td align="left">Bacterial shedding rate by infected zooplankton</td>
 <td align="center">cells L<sup>-1</sup> day<sup>-1</sup> per mg</td>
@@ -1845,35 +1863,23 @@ display: none;
 <td align="center">XX</td>
 </tr>
 <tr class="odd">
-<td align="center"><span class="math inline">\(c\)</span></td>
-<td align="left">Colonization efficient of bacteria in zooplankton</td>
-<td align="center">cells (mg) L <sup>-1</sup></td>
-<td align="center"><span class="math inline">\(5 \times
-10^{-7}\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="even">
-<td align="center"><span class="math inline">\(\lambda\)</span></td>
-<td align="left">Encounter rate of Vibrio and zooplankton</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.005\)</span> - <span class="math inline">\(0.1\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="odd">
+<td align="center">Vibriophage</td>
 <td align="center"><span class="math inline">\(\mu\)</span></td>
 <td align="left">Encounter rate of Vibrio and phage</td>
 <td align="center">day<sup>-1</sup></td>
-<td align="center">XX</td>
+<td align="center"><span class="math inline">\(1.4\times10^{-9}\)</span></td>
 <td align="center">XX</td>
 </tr>
 <tr class="even">
-<td align="center"><span class="math inline">\(\delta_B\)</span></td>
-<td align="left">Death/washout rate of bacterial in the reservoir</td>
+<td align="center">Vibriophage</td>
+<td align="center"><span class="math inline">\(\delta_V\)</span></td>
+<td align="left">Death/washout rate of Vibrio in the reservoir</td>
 <td align="center">day<sup>-1</sup></td>
 <td align="center"><span class="math inline">\(0.33\)</span></td>
 <td align="center">XX</td>
 </tr>
 <tr class="odd">
+<td align="center">Vibriophage</td>
 <td align="center"><span class="math inline">\(\tau\)</span></td>
 <td align="left">Conversion coefficient from Vibrio to phage</td>
 <td align="center">Virions per cell</td>
@@ -1881,6 +1887,7 @@ display: none;
 <td align="center">XX</td>
 </tr>
 <tr class="even">
+<td align="center">Vibriophage</td>
 <td align="center"><span class="math inline">\(\delta_P\)</span></td>
 <td align="left">Phage decay rate</td>
 <td align="center">Virions per day</td>
@@ -1888,6 +1895,24 @@ display: none;
 <td align="center">XX</td>
 </tr>
 <tr class="odd">
+<td align="center">Plankton</td>
+<td align="center"><span class="math inline">\(\lambda\)</span></td>
+<td align="left">Encounter rate of Vibrio and zooplankton</td>
+<td align="center">day<sup>-1</sup></td>
+<td align="center"><span class="math inline">\(0.005\)</span> - <span class="math inline">\(0.1\)</span></td>
+<td align="center">XX</td>
+</tr>
+<tr class="even">
+<td align="center">Plankton</td>
+<td align="center"><span class="math inline">\(c\)</span></td>
+<td align="left">Colonization efficient of bacteria in zooplankton</td>
+<td align="center">cells (mg) L <sup>-1</sup></td>
+<td align="center"><span class="math inline">\(5 \times
+10^{-7}\)</span></td>
+<td align="center">XX</td>
+</tr>
+<tr class="odd">
+<td align="center">Plankton</td>
 <td align="center"><span class="math inline">\(\eta\)</span></td>
 <td align="left">Conversion coefficient from phytoplankton to
 zooplankton</td>
@@ -1896,6 +1921,7 @@ zooplankton</td>
 <td align="center">XX</td>
 </tr>
 <tr class="even">
+<td align="center">Plankton</td>
 <td align="center"><span class="math inline">\(\alpha\)</span></td>
 <td align="left">Predation rate of zooplankton and phytoplankton</td>
 <td align="center">day<sup>-1</sup></td>
@@ -1903,6 +1929,7 @@ zooplankton</td>
 <td align="center">XX</td>
 </tr>
 <tr class="odd">
+<td align="center">Plankton</td>
 <td align="center"><span class="math inline">\(\delta_Z\)</span></td>
 <td align="left">Death rate of zooplankton</td>
 <td align="center">day<sup>-1</sup></td>
@@ -1910,6 +1937,7 @@ zooplankton</td>
 <td align="center">XX</td>
 </tr>
 <tr class="even">
+<td align="center">Plankton</td>
 <td align="center"><span class="math inline">\(r\)</span></td>
 <td align="left">Phytoplankton intrinsic growth rate</td>
 <td align="center">day<sup>-1</sup></td>
@@ -1917,6 +1945,7 @@ zooplankton</td>
 <td align="center">XX</td>
 </tr>
 <tr class="odd">
+<td align="center">Plankton</td>
 <td align="center"><span class="math inline">\(K\)</span></td>
 <td align="left">Phytoplankton carrying capacity</td>
 <td align="center">mg L <sup>-1</sup></td>
@@ -1925,12 +1954,93 @@ zooplankton</td>
 </tr>
 </tbody>
 </table>
-<p><span class="math inline">\(h_Z\)</span> | Half-saturation rate
-constant of bacterial-zooplankton association | cells L<sup>-1</sup> |
-<span class="math inline">\(10^9\)</span> | XX <span class="math inline">\(h_B\)</span> | Half-saturation rate constant of
-bacterial transmission | cells L<sup>-1</sup> | <span class="math inline">\(10^9\)</span> | XX <span class="math inline">\(h_P\)</span> | Half-saturation rate constant of
-zooplankton and phytoplankton encountering | cells (mg) L <sup>-1</sup>
-| <span class="math inline">\(0.5\)</span> | XX</p>
+<p>With half-saturation</p>
+<p><span class="math display">\[
+\begin{aligned}
+\frac{dS}{dt} &amp;= b N - \delta S - \beta V S + \omega R \\
+\frac{dI}{dt} &amp;= \frac{\beta V S}{h_V + V} - (\gamma + \delta_I +
+\delta)I \\
+\frac{dR}{dt} &amp;= \gamma I - (\omega + \delta) R \\
+\frac{dV}{dt} &amp;= \sigma I + \rho Z_V - \frac{c \lambda V Z_F}{h_V +
+V} - \frac{\mu V P}{h_P + P} - \delta_V V \\
+\frac{dP}{dt} &amp;= \tau \mu VP - \delta_P P\\
+\frac{dZ_F}{dt} &amp;= \frac{\eta \alpha X (Z_F + Z_V)}{h_X + X} -
+\frac{\lambda V Z_F}{h_V + V} - \delta_Z Z_F\\
+\frac{dZ_V}{dt} &amp;= \frac{\lambda V Z_F}{h_V + V} - \delta_Z Z_V \\
+\frac{dX}{dt} &amp;= r X (1 - \frac{X}{K}) - \frac{\alpha X (Z_V +
+Z_F)}{h_X + X} \\
+\end{aligned}
+\]</span></p>
+<table>
+<colgroup>
+<col width="4%" />
+<col width="9%" />
+<col width="50%" />
+<col width="27%" />
+<col width="5%" />
+<col width="2%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Type</th>
+<th align="center">Parameter</th>
+<th align="left">Description</th>
+<th align="center">Dimensions</th>
+<th align="center">Estimate</th>
+<th align="center">Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">SIR</td>
+<td align="center"><span class="math inline">\(h_b\)</span></td>
+<td align="left">Half-saturation rate constant of bacterial
+transmission</td>
+<td align="center">cells L<sup>-1</sup></td>
+<td align="center"><span class="math inline">\(10^9\)</span></td>
+<td align="center">XX</td>
+</tr>
+<tr class="even">
+<td align="center">Vibriophage</td>
+<td align="center"><span class="math inline">\(h_P\)</span></td>
+<td align="left">Half-saturation rate constant of bacterial-phage
+association</td>
+<td align="center">cells L<sup>-1</sup></td>
+<td align="center"><span class="math inline">\(10^9\)</span></td>
+<td align="center">XX</td>
+</tr>
+<tr class="odd">
+<td align="center">Plankton</td>
+<td align="center"><span class="math inline">\(h_m\)</span></td>
+<td align="left">Half-saturation rate constant of bacterial-zooplankton
+association</td>
+<td align="center">cells L<sup>-1</sup></td>
+<td align="center"><span class="math inline">\(10^7\)</span></td>
+<td align="center">XX</td>
+</tr>
+<tr class="even">
+<td align="center">Plankton</td>
+<td align="center"><span class="math inline">\(h_X\)</span></td>
+<td align="left">Half-saturation rate constant of zooplankton and
+phytoplankton encountering</td>
+<td align="center">cells (mg) L <sup>-1</sup></td>
+<td align="center"><span class="math inline">\(0.6\)</span></td>
+<td align="center">XX</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="run-the-model" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Run the model</h1>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG48IS0tIHJuYi1zb3VyY2UtYmVnaW4gZXlKa1lYUmhJam9pWUdCZ2NseHVjMjkxY21ObEtHaGxjbVU2T21obGNtVW9YQ0p6WTNKcGNIUnpMMjFoYVc0dVVsd2lLU2xjYm1CZ1lDSjkgLS0+XG5cbmBgYHJcbnNvdXJjZShoZXJlOjpoZXJlKFwic2NyaXB0cy9tYWluLlJcIikpXG5gYGBcblxuPCEtLSBybmItc291cmNlLWVuZCAtLT5cbiJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlKGhlcmU6OmhlcmUoXCJzY3JpcHRzL21haW4uUlwiKSlcbmBgYCJ9 -->
+<pre class="r"><code>source(here::here(&quot;scripts/main.R&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <p>With half-saturation</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -1951,8 +2061,9 @@ P}\\
 \end{aligned}
 \]</span></p>
 <!-- rnb-text-end -->
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiU0lSQiBtb2RlbCB3aXRoIHBsYW5rdG9ucyBhbmQgcGhhZ2VzIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgp3aGVyZSB0aGUgdG90YWwgbnVtYmVyIG9mIGh1bWFuIHBvcHVsYXRpb24gaXMgJE4gPSBTKyBJICtSJAoKV2l0aG91dCBoYWxmLXNhdHVyYXRpb24KCiQkClxiZWdpbnthbGlnbmVkfQpcZnJhY3tkU317ZHR9ICY9IGIgTiAtIFxkZWx0YSBTIC0gXGJldGEgViBTICsgXG9tZWdhIFIgXFwKXGZyYWN7ZEl9e2R0fSAmPSBcYmV0YSBWIFMgLSAoXGdhbW1hICsgXGRlbHRhX0kgKyBcZGVsdGEpSSBcXApcZnJhY3tkUn17ZHR9ICY9IFxnYW1tYSBJIC0gKFxvbWVnYSArIFxkZWx0YSkgUiBcXApcZnJhY3tkVn17ZHR9ICY9IFxzaWdtYSBJICsgXHJobyBaX1YgLSBjIFxsYW1iZGEgViBaX0YgLSBcbXUgViBQIC0gXGRlbHRhX1YgViBcXApcZnJhY3tkUH17ZHR9ICY9IFx0YXUgXG11IFZQIC0gXGRlbHRhX1AgUFxcClxmcmFje2RaX0Z9e2R0fSAmPSBcZXRhIFxhbHBoYSBQIChaX0YgKyBaX1YpIC0gXGxhbWJkYSBWIFpfRiAtIFxkZWx0YV9aIFpfRlxcClxmcmFje2RaX1Z9e2R0fSAmPSBcbGFtYmRhIFYgWl9GIC0gXGRlbHRhX1ogWl9WXFwKXGZyYWN7ZFh9e2R0fSAmPSByIFggKDEgLSBcZnJhY3tYfXtLfSkgLSBcYWxwaGEgWCAoWl9WICsgWl9GKVxcIApcZW5ke2FsaWduZWR9CiQkCgoKfCBQYXJhbWV0ZXIgfCBEZXNjcmlwdGlvbiAgfCBEaW1lbnNpb25zIHwgRXN0aW1hdGUgIHwgUmVmZXJlbmNlIHwKfDotLS0tLS0tLS06fDotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS18Oi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS06fDotLS0tLTp8Oi06IAokYiQgICAgICAgICB8IE5hdHVyYWwgYmlydGgvaW1taWdyYXRpb24gcmF0ZSBvZiBodW1hbiAgICAgICAgICAgICAgICAgIHwgZGF5Xi0xXiAgICAgICAgICAgICAgICAgICAgICAgICB8ICQ2Ljg1IFx0aW1lcyAxMCBeey01fSQgfCBYWAokXGRlbHRhJCAgICB8IE5hdHVyYWwgZGVhdGgvbWlncmF0aW9uIHJhdGUgb2YgaHVtYW4gICAgICAgICAgICAgICAgICAgIHwgZGF5Xi0xXiAgICAgICAgICAgICAgICAgICAgICAgICB8ICQzLjggXHRpbWVzIDEwIF57LTV9JCAgfCBYWAokXGJldGEkICAgICB8IFRyYW5zbWlzc2lvbiByYXRlIHZpYSBiYWN0ZXJpYSAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgZGF5Xi0xXiAgICAgICAgICAgICAgICAgICAgICAgICB8ICQwLjAyMTQkIHwgWFgKJFxvbWVnYSQgICAgfCBSYXRlIG9mIGltbXVuaXR5IGxvc3Mgb2YgcmVjb3ZlcmVkIGluZGl2aWR1YWxzICAgICAgICAgICB8IGRheV4tMV4gICAgICAgICAgICAgICAgICAgICAgICAgfCAkMC4wMDA5MiQgfCBYWAokXGdhbW1hJCAgICB8IFJlY292ZXJ5IHJhdGUgb2YgaW5mZWN0ZWQgaHVtYW4gICAgICAgICAgICAgICAgICAgICAgICAgIHwgZGF5Xi0xXiAgICAgICAgICAgICAgICAgICAgICAgICB8ICQwLjIkICB8IFhYCiRcZGVsdGFfSSQgIHwgSW5kdWNlZCBkZWF0aCByYXRlIGNhdXNlZCBieSBpbmZlY3Rpb24gICAgICAgICAgICAgICAgICAgfCBkYXleLTFeICAgICAgICAgICAgICAgICAgICAgICAgIHwgJDAuMDEzJCB8IFhYCiRcc2lnbWEkICAgIHwgQmFjdGVyaWFsIHNoZWRkaW5nIHJhdGUgYnkgaW5mZWN0ZWQgaHVtYW4gICAgICAgICAgICAgICAgfCBjZWxscyBMXi0xXiBkYXleLTFeIHBlciBwZXJzb24gIHwgJDEwJC0kMTBeey00fSQgfCBYWCAKJFxyaG8kICAgICAgfCBCYWN0ZXJpYWwgc2hlZGRpbmcgcmF0ZSBieSBpbmZlY3RlZCB6b29wbGFua3RvbiAgICAgICAgICB8IGNlbGxzIExeLTFeIGRheV4tMV4gcGVyIG1nICAgICAgfCBYWCB8IFhYIAokYyQgICAgICAgICB8IENvbG9uaXphdGlvbiBlZmZpY2llbnQgb2YgYmFjdGVyaWEgaW4gem9vcGxhbmt0b24gICAgICAgIHwgY2VsbHMgKG1nKSBMIF4tMV4gICAgICAgICAgICAgICB8ICQ1IFx0aW1lcyAxMF57LTd9JCB8IFhYCiRcbGFtYmRhJCAgIHwgRW5jb3VudGVyIHJhdGUgb2YgVmlicmlvIGFuZCB6b29wbGFua3RvbiAgICAgICAgICAgICAgICAgfCBkYXleLTFeICAgICAgICAgICAgICAgICAgICAgICAgIHwgJDAuMDA1JCAtICQwLjEkIHwgWFgKJFxtdSQgICAgICAgfCBFbmNvdW50ZXIgcmF0ZSBvZiBWaWJyaW8gYW5kIHBoYWdlICAgICAgICAgICAgICAgICAgICAgICB8IGRheV4tMV4gICAgICAgICAgICAgICAgICAgICAgICAgfCBYWCB8IFhYCiRcZGVsdGFfQiQgIHwgRGVhdGgvd2FzaG91dCByYXRlIG9mIGJhY3RlcmlhbCBpbiB0aGUgcmVzZXJ2b2lyICAgICAgICAgfCBkYXleLTFeICAgICAgICAgICAgICAgICAgICAgICAgIHwgJDAuMzMkIHwgWFgKJFx0YXUkICAgICAgfCBDb252ZXJzaW9uIGNvZWZmaWNpZW50IGZyb20gVmlicmlvIHRvIHBoYWdlICAgICAgICAgICAgICB8IFZpcmlvbnMgcGVyIGNlbGwgICAgICAgICAgICAgICAgfCAkODAkIC0gJDEwMCQgfCBYWAokXGRlbHRhX1AkICB8IFBoYWdlIGRlY2F5IHJhdGUgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgVmlyaW9ucyBwZXIgZGF5ICAgICAgICAgICAgICAgICB8ICQwLjUkLSQ3LjkkIHwgWFgKJFxldGEkICAgICAgfCBDb252ZXJzaW9uIGNvZWZmaWNpZW50IGZyb20gcGh5dG9wbGFua3RvbiB0byB6b29wbGFua3RvbiB8IE5BICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAkMC42JCB8IFhYCiRcYWxwaGEkICAgIHwgUHJlZGF0aW9uIHJhdGUgb2Ygem9vcGxhbmt0b24gYW5kIHBoeXRvcGxhbmt0b24gICAgICAgICAgfCBkYXleLTFeICAgICAgICAgICAgICAgICAgICAgICAgIHwgJDAuNCQgfCBYWAokXGRlbHRhX1okICB8IERlYXRoIHJhdGUgb2Ygem9vcGxhbmt0b24gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgZGF5Xi0xXiAgICAgICAgICAgICAgICAgICAgICAgICB8ICQwLjA2JCB8IFhYCiRyJCAgICAgICAgIHwgUGh5dG9wbGFua3RvbiBpbnRyaW5zaWMgZ3Jvd3RoIHJhdGUgICAgICAgICAgICAgICAgICAgICAgfCBkYXleLTFeICAgICAgICAgICAgICAgICAgICAgICAgIHwgJDAuNSQgfCBYWAokSyQgICAgICAgICB8IFBoeXRvcGxhbmt0b24gY2FycnlpbmcgY2FwYWNpdHkgICAgICAgICAgICAgICAgICAgICAgICAgIHwgbWcgTCBeLTFeICAgICAgICAgICAgICAgICAgICAgICB8ICQxJCB8IFhYCgoKCgokaF9aJCB8IEhhbGYtc2F0dXJhdGlvbiByYXRlIGNvbnN0YW50IG9mIGJhY3RlcmlhbC16b29wbGFua3RvbiBhc3NvY2lhdGlvbiB8IGNlbGxzIExeLTFeIHwgJDEwXjkkICB8IFhYCiRoX0IkIHwgSGFsZi1zYXR1cmF0aW9uIHJhdGUgY29uc3RhbnQgb2YgYmFjdGVyaWFsIHRyYW5zbWlzc2lvbiB8IGNlbGxzIExeLTFeIHwgJDEwXjkkICB8IFhYCiRoX1AkIHwgSGFsZi1zYXR1cmF0aW9uIHJhdGUgY29uc3RhbnQgb2Ygem9vcGxhbmt0b24gYW5kIHBoeXRvcGxhbmt0b24gZW5jb3VudGVyaW5nIHwgY2VsbHMgKG1nKSBMIF4tMV4gfCAkMC41JCAgfCBYWAoKCgoKCldpdGggaGFsZi1zYXR1cmF0aW9uCgokJApcYmVnaW57YWxpZ25lZH0KXGZyYWN7ZFN9e2R0fSAmPSBcZGVsdGFfYiBOIC0gXGRlbHRhX2QgUyAtIFxiZXRhICBcZnJhY3tCX0YgU317aF9CICsgQl9GfSBcXApcZnJhY3tkSX17ZHR9ICY9IFxiZXRhIFxmcmFje0JfRiBTfXtoX0IgKyBCX0Z9IC0gKFxnYW1tYSArIFxtdSArIFxkZWx0YV9kKUkgXFwKXGZyYWN7ZFJ9e2R0fSAmPSBcZ2FtbWEgSSAtIFxkZWx0YV9kIFJcXApcZnJhY3tkQl9GfXtkdH0gJj0gXGxhbWJkYSBJICsgYyBcc2lnbWFfWiBcZnJhY3tCX0YgWn17aF9aICsgWn0gLSBjIFxzaWdtYV9aIFxmcmFje0JfRiBafXtoX1ogKyBafSAtIFx0YXUgXHNpZ21hX0ggQl9GIEggLSBkX0IgQl9GIFxcClxmcmFje2RCX1p9e2R0fSAmPSBjIFxzaWdtYV9aIFxmcmFje0JfRiBafXtoX1ogKyBafSAtIFxzaWdtYV9IIEJfWiBIIC0gZF9CQl9aXFwKXGZyYWN7ZFp9e2R0fSAmPSBcc2lnbWFfWiBcZnJhY3tCX1ogWn0ge2hfWiArIFp9ICsgY197Wn0gXGFscGhhIFxmcmFje1AgWn17aF9QICsgUH0gXFwKXGZyYWN7ZFB9e2R0fSAmPSByX1AgUCAoMSAtIFxmcmFje1B9e0t9KSAtIFxhbHBoYSBcZnJhY3tQIFp9e2hfUCArIFB9XFwgClxmcmFje2RIfXtkdH0gJj0gKFx0YXUgQl9GICsgQl9aKWNfe0h9IFxzaWdtYV9IIEggLSBcb21lZ2EgSFxcClxlbmR7YWxpZ25lZH0KJCQK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiU0lSQiBtb2RlbCB3aXRoIHBsYW5rdG9ucyBhbmQgcGhhZ2VzIgpvdXRwdXQ6IAogICAgaHRtbF9ub3RlYm9vazoKICAgICAgICB0b2M6IHRydWUKICAgICAgICBudW1iZXJfc2VjdGlvbnM6IHRydWUKLS0tCgoKIyBNYWluIG1vZGVsCldpdGhvdXQgaGFsZi1zYXR1cmF0aW9uCgokJApcYmVnaW57YWxpZ25lZH0KXGZyYWN7ZFN9e2R0fSAmPSBiIE4gKyBcb21lZ2EgUiAtIFxkZWx0YSBTIC0gXGJldGEgViBTICBcXApcZnJhY3tkSX17ZHR9ICY9IFxiZXRhIFYgUyAtIChcZ2FtbWEgKyBcZGVsdGFfSSArIFxkZWx0YSlJIFxcClxmcmFje2RSfXtkdH0gJj0gXGdhbW1hIEkgLSAoXG9tZWdhICsgXGRlbHRhKSBSIFxcClxmcmFje2RWfXtkdH0gJj0gXHNpZ21hIEkgKyBccmhvIFpfViAtIGMgXGxhbWJkYSBWIFpfRiAtIFxtdSBWIFAgLSBcZGVsdGFfViBWIFxcClxmcmFje2RQfXtkdH0gJj0gXHRhdSBcbXUgVlAgLSBcZGVsdGFfUCBQXFwKXGZyYWN7ZFpfRn17ZHR9ICY9IFxldGEgXGFscGhhIFggKFpfRiArIFpfVikgLSBcbGFtYmRhIFYgWl9GIC0gXGRlbHRhX1ogWl9GXFwKXGZyYWN7ZFpfVn17ZHR9ICY9IFxsYW1iZGEgViBaX0YgLSBcZGVsdGFfWiBaX1ZcXApcZnJhY3tkWH17ZHR9ICY9IHIgWCAoMSAtIFxmcmFje1h9e0t9KSAtIFxhbHBoYSBYIChaX1YgKyBaX0YpXFwgClxlbmR7YWxpZ25lZH0KJCQKCndoZXJlIHRoZSB0b3RhbCBudW1iZXIgb2YgaHVtYW4gcG9wdWxhdGlvbiBpcyAkTiA9IFMrIEkgK1IkCgoKfCBUeXBlIHwgUGFyYW1ldGVyIHwgRGVzY3JpcHRpb24gIHwgRGltZW5zaW9ucyB8IEVzdGltYXRlICB8IFJlZmVyZW5jZSB8Cnw6LS0tLTp8Oi0tLS0tLS0tLTp8Oi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLXw6LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLTp8Oi0tLS0tOnw6LTp8ClNJUiAgICAgICAgIHwgJGIkICAgICAgIHwgTmF0dXJhbCBiaXJ0aC9pbW1pZ3JhdGlvbiByYXRlIG9mIGh1bWFuICAgICAgICAgICAgICAgICAgfCBkYXleLTFeICAgICAgICAgICAgICAgICAgICAgICAgIHwgJDYuODUgXHRpbWVzIDEwIF57LTV9JCB8IFhYClNJUiAgICAgICAgIHwgJFxkZWx0YSQgICAgfCBOYXR1cmFsIGRlYXRoL21pZ3JhdGlvbiByYXRlIG9mIGh1bWFuICAgICAgICAgICAgICAgICAgICB8IGRheV4tMV4gICAgICAgICAgICAgICAgICAgICAgICAgfCAkMy44IFx0aW1lcyAxMCBeey01fSQgIHwgWFgKU0lSICAgICAgICAgfCAkXGJldGEkICAgICB8IFRyYW5zbWlzc2lvbiByYXRlIHZpYSBiYWN0ZXJpYSAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgZGF5Xi0xXiAgICAgICAgICAgICAgICAgICAgICAgICB8ICQwLjIxNCQgfCBYWApTSVIgICAgICAgICB8ICRcb21lZ2EkICAgIHwgUmF0ZSBvZiBpbW11bml0eSBsb3NzIG9mIHJlY292ZXJlZCBpbmRpdmlkdWFscyAgICAgICAgICAgfCBkYXleLTFeICAgICAgICAgICAgICAgICAgICAgICAgIHwgJDAuMDAwOTIkIHwgWFgKU0lSICAgICAgICAgfCAkXGdhbW1hJCAgICB8IFJlY292ZXJ5IHJhdGUgb2YgaW5mZWN0ZWQgaHVtYW4gICAgICAgICAgICAgICAgICAgICAgICAgIHwgZGF5Xi0xXiAgICAgICAgICAgICAgICAgICAgICAgICB8ICQwLjIkICB8IFhYClNJUiAgICAgICAgIHwgJFxkZWx0YV9JJCAgfCBJbmR1Y2VkIGRlYXRoIHJhdGUgY2F1c2VkIGJ5IGluZmVjdGlvbiAgICAgICAgICAgICAgICAgICB8IGRheV4tMV4gICAgICAgICAgICAgICAgICAgICAgICAgfCAkMC4wMTMkIHwgWFgKVmlicmlvcGhhZ2UgfCAkXHNpZ21hJCAgICB8IEJhY3RlcmlhbCBzaGVkZGluZyByYXRlIGJ5IGluZmVjdGVkIGh1bWFuICAgICAgICAgICAgICAgIHwgY2VsbHMgTF4tMV4gZGF5Xi0xXiBwZXIgcGVyc29uICB8ICQxMCQtJDEwXns0fSQgfCBYWCAKVmlicmlvcGhhZ2UgfCAkXHJobyQgICAgICB8IEJhY3RlcmlhbCBzaGVkZGluZyByYXRlIGJ5IGluZmVjdGVkIHpvb3BsYW5rdG9uICAgICAgICAgIHwgY2VsbHMgTF4tMV4gZGF5Xi0xXiBwZXIgbWcgICAgICB8IFhYIHwgWFggClZpYnJpb3BoYWdlIHwgJFxtdSQgICAgICAgfCBFbmNvdW50ZXIgcmF0ZSBvZiBWaWJyaW8gYW5kIHBoYWdlICAgICAgICAgICAgICAgICAgICAgICB8IGRheV4tMV4gICAgICAgICAgICAgICAgICAgICAgICAgfCAkMS40XHRpbWVzMTBeey05fSQgfCBYWApWaWJyaW9waGFnZSB8ICRcZGVsdGFfViQgIHwgRGVhdGgvd2FzaG91dCByYXRlIG9mIFZpYnJpbyBpbiB0aGUgcmVzZXJ2b2lyICAgICAgICAgICAgfCBkYXleLTFeICAgICAgICAgICAgICAgICAgICAgICAgIHwgJDAuMzMkIHwgWFgKVmlicmlvcGhhZ2UgfCAkXHRhdSQgICAgICB8IENvbnZlcnNpb24gY29lZmZpY2llbnQgZnJvbSBWaWJyaW8gdG8gcGhhZ2UgICAgICAgICAgICAgIHwgVmlyaW9ucyBwZXIgY2VsbCAgICAgICAgICAgICAgICB8ICQ4MCQgLSAkMTAwJCB8IFhYClZpYnJpb3BoYWdlIHwgJFxkZWx0YV9QJCAgfCBQaGFnZSBkZWNheSByYXRlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IFZpcmlvbnMgcGVyIGRheSAgICAgICAgICAgICAgICAgfCAkMC41JC0kNy45JCB8IFhYClBsYW5rdG9uICAgIHwgJFxsYW1iZGEkICAgfCBFbmNvdW50ZXIgcmF0ZSBvZiBWaWJyaW8gYW5kIHpvb3BsYW5rdG9uICAgICAgICAgICAgICAgICB8IGRheV4tMV4gICAgICAgICAgICAgICAgICAgICAgICAgfCAkMC4wMDUkIC0gJDAuMSQgfCBYWApQbGFua3RvbiAgICB8ICRjJCAgICAgICAgIHwgQ29sb25pemF0aW9uIGVmZmljaWVudCBvZiBiYWN0ZXJpYSBpbiB6b29wbGFua3RvbiAgICAgICAgfCBjZWxscyAobWcpIEwgXi0xXiAgICAgICAgICAgICAgIHwgJDUgXHRpbWVzIDEwXnstN30kIHwgWFgKUGxhbmt0b24gICAgfCAkXGV0YSQgICAgICB8IENvbnZlcnNpb24gY29lZmZpY2llbnQgZnJvbSBwaHl0b3BsYW5rdG9uIHRvIHpvb3BsYW5rdG9uIHwgTkEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICQwLjYkIHwgWFgKUGxhbmt0b24gICAgfCAkXGFscGhhJCAgICB8IFByZWRhdGlvbiByYXRlIG9mIHpvb3BsYW5rdG9uIGFuZCBwaHl0b3BsYW5rdG9uICAgICAgICAgIHwgZGF5Xi0xXiAgICAgICAgICAgICAgICAgICAgICAgICB8ICQwLjQkIHwgWFgKUGxhbmt0b24gICAgfCAkXGRlbHRhX1okICB8IERlYXRoIHJhdGUgb2Ygem9vcGxhbmt0b24gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgZGF5Xi0xXiAgICAgICAgICAgICAgICAgICAgICAgICB8ICQwLjA2JCB8IFhYClBsYW5rdG9uICAgIHwgJHIkICAgICAgICAgfCBQaHl0b3BsYW5rdG9uIGludHJpbnNpYyBncm93dGggcmF0ZSAgICAgICAgICAgICAgICAgICAgICB8IGRheV4tMV4gICAgICAgICAgICAgICAgICAgICAgICAgfCAkMC41JCB8IFhYClBsYW5rdG9uICAgIHwgJEskICAgICAgICAgfCBQaHl0b3BsYW5rdG9uIGNhcnJ5aW5nIGNhcGFjaXR5ICAgICAgICAgICAgICAgICAgICAgICAgICB8IG1nIEwgXi0xXiAgICAgICAgICAgICAgICAgICAgICAgfCAkMSQgfCBYWAoKV2l0aCBoYWxmLXNhdHVyYXRpb24KCiQkClxiZWdpbnthbGlnbmVkfQpcZnJhY3tkU317ZHR9ICY9IGIgTiAtIFxkZWx0YSBTIC0gXGJldGEgViBTICsgXG9tZWdhIFIgXFwKXGZyYWN7ZEl9e2R0fSAmPSBcZnJhY3tcYmV0YSBWIFN9e2hfViArIFZ9IC0gKFxnYW1tYSArIFxkZWx0YV9JICsgXGRlbHRhKUkgXFwKXGZyYWN7ZFJ9e2R0fSAmPSBcZ2FtbWEgSSAtIChcb21lZ2EgKyBcZGVsdGEpIFIgXFwKXGZyYWN7ZFZ9e2R0fSAmPSBcc2lnbWEgSSArIFxyaG8gWl9WIC0gXGZyYWN7YyBcbGFtYmRhIFYgWl9GfXtoX1YgKyBWfSAtIFxmcmFje1xtdSBWIFB9e2hfUCArIFB9IC0gXGRlbHRhX1YgViBcXApcZnJhY3tkUH17ZHR9ICY9IFx0YXUgXG11IFZQIC0gXGRlbHRhX1AgUFxcClxmcmFje2RaX0Z9e2R0fSAmPSBcZnJhY3tcZXRhIFxhbHBoYSBYIChaX0YgKyBaX1YpfXtoX1ggKyBYfSAtIFxmcmFje1xsYW1iZGEgViBaX0Z9e2hfViArIFZ9IC0gXGRlbHRhX1ogWl9GXFwKXGZyYWN7ZFpfVn17ZHR9ICY9IFxmcmFje1xsYW1iZGEgViBaX0Z9e2hfViArIFZ9IC0gXGRlbHRhX1ogWl9WIFxcClxmcmFje2RYfXtkdH0gJj0gciBYICgxIC0gXGZyYWN7WH17S30pIC0gXGZyYWN7XGFscGhhIFggKFpfViArIFpfRil9e2hfWCArIFh9IFxcIApcZW5ke2FsaWduZWR9CiQkCgp8IFR5cGUgfCBQYXJhbWV0ZXIgfCBEZXNjcmlwdGlvbiAgfCBEaW1lbnNpb25zIHwgRXN0aW1hdGUgIHwgUmVmZXJlbmNlIHwKfDotLS0tOnw6LS0tLS0tLS0tOnw6LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfDotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tOnw6LS0tLS06fDotOnwKU0lSIHwgJGhfYiQgfCBIYWxmLXNhdHVyYXRpb24gcmF0ZSBjb25zdGFudCBvZiBiYWN0ZXJpYWwgdHJhbnNtaXNzaW9uIHwgY2VsbHMgTF4tMV4gfCAkMTBeOSQgIHwgWFgKVmlicmlvcGhhZ2UgfCAkaF9QJCB8IEhhbGYtc2F0dXJhdGlvbiByYXRlIGNvbnN0YW50IG9mIGJhY3RlcmlhbC1waGFnZSBhc3NvY2lhdGlvbiB8IGNlbGxzIExeLTFeIHwgJDEwXjkkICB8IFhYClBsYW5rdG9uIHwgJGhfbSQgfCBIYWxmLXNhdHVyYXRpb24gcmF0ZSBjb25zdGFudCBvZiBiYWN0ZXJpYWwtem9vcGxhbmt0b24gYXNzb2NpYXRpb24gfCBjZWxscyBMXi0xXiB8ICQxMF43JCAgfCBYWApQbGFua3RvbiB8ICRoX1gkIHwgSGFsZi1zYXR1cmF0aW9uIHJhdGUgY29uc3RhbnQgb2Ygem9vcGxhbmt0b24gYW5kIHBoeXRvcGxhbmt0b24gZW5jb3VudGVyaW5nIHwgY2VsbHMgKG1nKSBMIF4tMV4gfCAkMC42JCAgfCBYWAoKCiMgUnVuIHRoZSBtb2RlbCAKCmBgYHtyfQpzb3VyY2UoaGVyZTo6aGVyZSgic2NyaXB0cy9tYWluLlIiKSkKYGBgCgoKCgoKV2l0aCBoYWxmLXNhdHVyYXRpb24KCiQkClxiZWdpbnthbGlnbmVkfQpcZnJhY3tkU317ZHR9ICY9IFxkZWx0YV9iIE4gLSBcZGVsdGFfZCBTIC0gXGJldGEgIFxmcmFje0JfRiBTfXtoX0IgKyBCX0Z9IFxcClxmcmFje2RJfXtkdH0gJj0gXGJldGEgXGZyYWN7Ql9GIFN9e2hfQiArIEJfRn0gLSAoXGdhbW1hICsgXG11ICsgXGRlbHRhX2QpSSBcXApcZnJhY3tkUn17ZHR9ICY9IFxnYW1tYSBJIC0gXGRlbHRhX2QgUlxcClxmcmFje2RCX0Z9e2R0fSAmPSBcbGFtYmRhIEkgKyBjIFxzaWdtYV9aIFxmcmFje0JfRiBafXtoX1ogKyBafSAtIGMgXHNpZ21hX1ogXGZyYWN7Ql9GIFp9e2hfWiArIFp9IC0gXHRhdSBcc2lnbWFfSCBCX0YgSCAtIGRfQiBCX0YgXFwKXGZyYWN7ZEJfWn17ZHR9ICY9IGMgXHNpZ21hX1ogXGZyYWN7Ql9GIFp9e2hfWiArIFp9IC0gXHNpZ21hX0ggQl9aIEggLSBkX0JCX1pcXApcZnJhY3tkWn17ZHR9ICY9IFxzaWdtYV9aIFxmcmFje0JfWiBafSB7aF9aICsgWn0gKyBjX3tafSBcYWxwaGEgXGZyYWN7UCBafXtoX1AgKyBQfSBcXApcZnJhY3tkUH17ZHR9ICY9IHJfUCBQICgxIC0gXGZyYWN7UH17S30pIC0gXGFscGhhIFxmcmFje1AgWn17aF9QICsgUH1cXCAKXGZyYWN7ZEh9e2R0fSAmPSAoXHRhdSBCX0YgKyBCX1opY197SH0gXHNpZ21hX0ggSCAtIFxvbWVnYSBIXFwKXGVuZHthbGlnbmVkfQokJAo=</div>
 
 
 

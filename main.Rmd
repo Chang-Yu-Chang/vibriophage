@@ -1,54 +1,81 @@
 ---
 title: "SIRB model with planktons and phages"
-output: html_notebook
+output: 
+    html_notebook:
+        toc: true
+        number_sections: true
 ---
 
-where the total number of human population is $N = S+ I +R$
 
+# Main model
 Without half-saturation
 
 $$
 \begin{aligned}
-\frac{dS}{dt} &= b N - \delta S - \beta V S + \omega R \\
+\frac{dS}{dt} &= b N + \omega R - \delta S - \beta V S  \\
 \frac{dI}{dt} &= \beta V S - (\gamma + \delta_I + \delta)I \\
 \frac{dR}{dt} &= \gamma I - (\omega + \delta) R \\
 \frac{dV}{dt} &= \sigma I + \rho Z_V - c \lambda V Z_F - \mu V P - \delta_V V \\
 \frac{dP}{dt} &= \tau \mu VP - \delta_P P\\
-\frac{dZ_F}{dt} &= \eta \alpha P (Z_F + Z_V) - \lambda V Z_F - \delta_Z Z_F\\
+\frac{dZ_F}{dt} &= \eta \alpha X (Z_F + Z_V) - \lambda V Z_F - \delta_Z Z_F\\
 \frac{dZ_V}{dt} &= \lambda V Z_F - \delta_Z Z_V\\
 \frac{dX}{dt} &= r X (1 - \frac{X}{K}) - \alpha X (Z_V + Z_F)\\ 
 \end{aligned}
 $$
 
-
-| Parameter | Description  | Dimensions | Estimate  | Reference |
-|:---------:|:---------------------------------------------------------|:-------------------------------:|:-----:|:-: 
-$b$         | Natural birth/immigration rate of human                  | day^-1^                         | $6.85 \times 10 ^{-5}$ | XX
-$\delta$    | Natural death/migration rate of human                    | day^-1^                         | $3.8 \times 10 ^{-5}$  | XX
-$\beta$     | Transmission rate via bacteria                           | day^-1^                         | $0.0214$ | XX
-$\omega$    | Rate of immunity loss of recovered individuals           | day^-1^                         | $0.00092$ | XX
-$\gamma$    | Recovery rate of infected human                          | day^-1^                         | $0.2$  | XX
-$\delta_I$  | Induced death rate caused by infection                   | day^-1^                         | $0.013$ | XX
-$\sigma$    | Bacterial shedding rate by infected human                | cells L^-1^ day^-1^ per person  | $10$-$10^{-4}$ | XX 
-$\rho$      | Bacterial shedding rate by infected zooplankton          | cells L^-1^ day^-1^ per mg      | XX | XX 
-$c$         | Colonization efficient of bacteria in zooplankton        | cells (mg) L ^-1^               | $5 \times 10^{-7}$ | XX
-$\lambda$   | Encounter rate of Vibrio and zooplankton                 | day^-1^                         | $0.005$ - $0.1$ | XX
-$\mu$       | Encounter rate of Vibrio and phage                       | day^-1^                         | XX | XX
-$\delta_B$  | Death/washout rate of bacterial in the reservoir         | day^-1^                         | $0.33$ | XX
-$\tau$      | Conversion coefficient from Vibrio to phage              | Virions per cell                | $80$ - $100$ | XX
-$\delta_P$  | Phage decay rate                                         | Virions per day                 | $0.5$-$7.9$ | XX
-$\eta$      | Conversion coefficient from phytoplankton to zooplankton | NA                              | $0.6$ | XX
-$\alpha$    | Predation rate of zooplankton and phytoplankton          | day^-1^                         | $0.4$ | XX
-$\delta_Z$  | Death rate of zooplankton                                | day^-1^                         | $0.06$ | XX
-$r$         | Phytoplankton intrinsic growth rate                      | day^-1^                         | $0.5$ | XX
-$K$         | Phytoplankton carrying capacity                          | mg L ^-1^                       | $1$ | XX
+where the total number of human population is $N = S+ I +R$
 
 
+| Type | Parameter | Description  | Dimensions | Estimate  | Reference |
+|:----:|:---------:|:------------------------------------------------------------|:-------------------------------:|:-----:|:-:|
+SIR         | $b$       | Natural birth/immigration rate of human                  | day^-1^                         | $6.85 \times 10 ^{-5}$ | XX
+SIR         | $\delta$    | Natural death/migration rate of human                    | day^-1^                         | $3.8 \times 10 ^{-5}$  | XX
+SIR         | $\beta$     | Transmission rate via bacteria                           | day^-1^                         | $0.214$ | XX
+SIR         | $\omega$    | Rate of immunity loss of recovered individuals           | day^-1^                         | $0.00092$ | XX
+SIR         | $\gamma$    | Recovery rate of infected human                          | day^-1^                         | $0.2$  | XX
+SIR         | $\delta_I$  | Induced death rate caused by infection                   | day^-1^                         | $0.013$ | XX
+Vibriophage | $\sigma$    | Bacterial shedding rate by infected human                | cells L^-1^ day^-1^ per person  | $10$-$10^{4}$ | XX 
+Vibriophage | $\rho$      | Bacterial shedding rate by infected zooplankton          | cells L^-1^ day^-1^ per mg      | XX | XX 
+Vibriophage | $\mu$       | Encounter rate of Vibrio and phage                       | day^-1^                         | $1.4\times10^{-9}$ | XX
+Vibriophage | $\delta_V$  | Death/washout rate of Vibrio in the reservoir            | day^-1^                         | $0.33$ | XX
+Vibriophage | $\tau$      | Conversion coefficient from Vibrio to phage              | Virions per cell                | $80$ - $100$ | XX
+Vibriophage | $\delta_P$  | Phage decay rate                                         | Virions per day                 | $0.5$-$7.9$ | XX
+Plankton    | $\lambda$   | Encounter rate of Vibrio and zooplankton                 | day^-1^                         | $0.005$ - $0.1$ | XX
+Plankton    | $c$         | Colonization efficient of bacteria in zooplankton        | cells (mg) L ^-1^               | $5 \times 10^{-7}$ | XX
+Plankton    | $\eta$      | Conversion coefficient from phytoplankton to zooplankton | NA                              | $0.6$ | XX
+Plankton    | $\alpha$    | Predation rate of zooplankton and phytoplankton          | day^-1^                         | $0.4$ | XX
+Plankton    | $\delta_Z$  | Death rate of zooplankton                                | day^-1^                         | $0.06$ | XX
+Plankton    | $r$         | Phytoplankton intrinsic growth rate                      | day^-1^                         | $0.5$ | XX
+Plankton    | $K$         | Phytoplankton carrying capacity                          | mg L ^-1^                       | $1$ | XX
+
+With half-saturation
+
+$$
+\begin{aligned}
+\frac{dS}{dt} &= b N - \delta S - \beta V S + \omega R \\
+\frac{dI}{dt} &= \frac{\beta V S}{h_V + V} - (\gamma + \delta_I + \delta)I \\
+\frac{dR}{dt} &= \gamma I - (\omega + \delta) R \\
+\frac{dV}{dt} &= \sigma I + \rho Z_V - \frac{c \lambda V Z_F}{h_V + V} - \frac{\mu V P}{h_P + P} - \delta_V V \\
+\frac{dP}{dt} &= \tau \mu VP - \delta_P P\\
+\frac{dZ_F}{dt} &= \frac{\eta \alpha X (Z_F + Z_V)}{h_X + X} - \frac{\lambda V Z_F}{h_V + V} - \delta_Z Z_F\\
+\frac{dZ_V}{dt} &= \frac{\lambda V Z_F}{h_V + V} - \delta_Z Z_V \\
+\frac{dX}{dt} &= r X (1 - \frac{X}{K}) - \frac{\alpha X (Z_V + Z_F)}{h_X + X} \\ 
+\end{aligned}
+$$
+
+| Type | Parameter | Description  | Dimensions | Estimate  | Reference |
+|:----:|:---------:|:------------------------------------------------------------|:-------------------------------:|:-----:|:-:|
+SIR | $h_b$ | Half-saturation rate constant of bacterial transmission | cells L^-1^ | $10^9$  | XX
+Vibriophage | $h_P$ | Half-saturation rate constant of bacterial-phage association | cells L^-1^ | $10^9$  | XX
+Plankton | $h_m$ | Half-saturation rate constant of bacterial-zooplankton association | cells L^-1^ | $10^7$  | XX
+Plankton | $h_X$ | Half-saturation rate constant of zooplankton and phytoplankton encountering | cells (mg) L ^-1^ | $0.6$  | XX
 
 
-$h_Z$ | Half-saturation rate constant of bacterial-zooplankton association | cells L^-1^ | $10^9$  | XX
-$h_B$ | Half-saturation rate constant of bacterial transmission | cells L^-1^ | $10^9$  | XX
-$h_P$ | Half-saturation rate constant of zooplankton and phytoplankton encountering | cells (mg) L ^-1^ | $0.5$  | XX
+# Run the model 
+
+```{r}
+source(here::here("scripts/main.R"))
+```
 
 
 
