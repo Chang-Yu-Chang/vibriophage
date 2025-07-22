@@ -4,6 +4,8 @@ library(tidyverse)
 library(deSolve)
 library(ggh4x)
 library(cowplot)
+library(ggrepel)
+library(ggsci)
 source(here::here("tools.R"))
 
 # Define the model as a function ----
@@ -137,7 +139,7 @@ state["S"] <- 1e4; state["V"] <- 1; state["Z_F"] <- Z_star; state["X"] <- X_star
 
 
 tb_mods <- tibble(
-    scenario = 1:4,
+    scenario = factor(1:4),
     pars = list(
         modifyList(parameters,list(lambda = 0,mu = 0)),
         modifyList(parameters,list(lambda = 0,mu = 1e-6)),
@@ -156,7 +158,7 @@ tb_results <- tb_mods %>%
     mutate(
         out = map2(pars, init, ~ode(y = .y, times = times, func = model, parms = .x)),
         tb = map(out, ~clean_ode(.x) %>% left_join(tb_types)),
-        tb = map(tb, ~filter(.x, time <= 20))
+        tb = map(tb, ~filter(.x, time <= 100))
     )
 
 # Plot
@@ -167,12 +169,9 @@ p <- plot_grid(
     plot_one_out(tb_results$tb[[4]], "Scenario 4: Full model"),
     ncol = 1
 )
-p
+
 ggsave(here::here("plots/mains.png"), p, width = 8, height = 12)
-
-
-
-
+save(tb_results, file = here::here("data/mains.rdata"))
 
 p <- plot_one_out(tb_results$tb[[1]], "Scenario 1: SIRB")
 ggsave(here::here("plots/main-01.png"), p, width = 8, height = 4)
