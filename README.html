@@ -352,253 +352,119 @@ display: none;
 </div>
 
 
-<div id="vibriophage" class="section level1">
-<h1>vibriophage</h1>
-<p>This repository includes scripts to simulate the SIRB
-vibrio-phage-plankton dynamics. The main model is modified from two
-papers:</p>
+<div id="vibriophage-sirb-phage-plankton-minimal-models" class="section level1">
+<h1>vibriophage — SIRB + (phage | plankton) minimal models</h1>
+<p>This repository simulates cholera dynamics by coupling a human
+<strong>SIR</strong> model to environmental <strong>Vibrio</strong> and,
+depending on the variant, to <strong>vibriophages</strong> and
+<strong>zooplankton</strong>. We use a short, single
+<strong>zooplankton-associated Vibrio</strong> pool <span class="math inline">\(V_Z\)</span> (no k-stage chain); attached cells
+detach back to <span class="math inline">\(V_F\)</span> at rate <span class="math inline">\(\epsilon\)</span>. The force of infection (FOI)
+for humans saturates with Vibrio concentration.</p>
+<div id="state-variables" class="section level2">
+<h2>State variables</h2>
 <ul>
-<li><p><a href="https://www.pnas.org/doi/full/10.1073/pnas.0600166103">Jensen et
-al 2006</a> simulates the SIRB with phage dynamics</p></li>
-<li><p><a href="http://arxiv.org/abs/2503.21963">Maity et al 2025</a>
-simulates the cholera driven by planktons</p></li>
+<li>Humans: <span class="math inline">\(S, I, R\)</span> with <span class="math inline">\(N=S+I+R\)</span>.</li>
+<li>Vibrio &amp; phage: <span class="math inline">\(V_F\)</span>
+(free-living Vibrio), <span class="math inline">\(V_Z\)</span>
+(zooplankton-associated Vibrio), <span class="math inline">\(P\)</span>
+(phage).</li>
+<li>Plankton: <span class="math inline">\(Z_F\)</span> (free
+zooplankton), <span class="math inline">\(Z_V\)</span>
+(Vibrio-associated zooplankton), <span class="math inline">\(X\)</span>
+(phytoplankton).</li>
 </ul>
-<p>The key novelty in this current model includes:</p>
+</div>
+<div id="model-ladder" class="section level2">
+<h2>Model ladder</h2>
 <ul>
-<li><p>Combining both phages and planktons in understanding cholera
-outbreak</p></li>
-<li><p>Plankton-conferred protection on Vibrio against phages</p></li>
+<li><strong>M0 (SIRB)</strong>: SIR + <span class="math inline">\(V_F\)</span> (no <span class="math inline">\(V_Z\)</span>, no <span class="math inline">\(P\)</span>).</li>
+<li><strong>M1 (Plankton-only)</strong>: adds <span class="math inline">\(V_Z, Z_F, Z_V, X\)</span>; no phage.</li>
+<li><strong>M2 (Phage-only)</strong>: adds <span class="math inline">\(P\)</span>; no plankton (<span class="math inline">\(V_Z=0\)</span>).</li>
+<li><strong>M3 (Both)</strong>: includes <span class="math inline">\(V_Z\)</span> <strong>and</strong> <span class="math inline">\(P\)</span>. <span class="math inline">\(V_Z\)</span> can be partially phage-susceptible
+via parameter <span class="math inline">\(g\)</span>.</li>
 </ul>
-<div id="model" class="section level2">
-<h2>Model</h2>
-<p>The main model comprises three parts</p>
-<ul>
-<li>The basic SIR model
-<ul>
-<li><span class="math inline">\(S\)</span>: Susceptible human</li>
-<li><span class="math inline">\(I\)</span>: Infected human</li>
-<li><span class="math inline">\(R\)</span>: Recovered human</li>
-</ul></li>
-<li>Vibrio-phage interactions
-<ul>
-<li><span class="math inline">\(V_F\)</span>: free-living Vibrio
-cells</li>
-<li><span class="math inline">\(V_Z\)</span>: zooplankton-associated
-Vibrio</li>
-<li><span class="math inline">\(P\)</span>: Phage</li>
-</ul></li>
-<li>Self-sufficient plankton dynamics:
-<ul>
-<li><span class="math inline">\(Z_F\)</span>: free-living
-Zooplanktons</li>
-<li><span class="math inline">\(Z_V\)</span>: Vibrio-associated
-Zooplanktons</li>
-<li><span class="math inline">\(X\)</span>: Phytoplanktons</li>
-</ul></li>
-</ul>
-<p><span class="math display">\[
+</div>
+<div id="dynamics-m3-both-model-specialized-models-drop-the-absent-terms" class="section level2">
+<h2>Dynamics (M3 “both” model; specialized models drop the absent
+terms)</h2>
+<p>Human FOI (saturating): <span class="math display">\[
+\lambda_H(t) \;=\; \frac{\beta \, (V_F + \theta V_Z)}{1 + h_V \, (V_F +
+\theta V_Z)}.
+\]</span></p>
+<p>Humans: <span class="math display">\[
 \begin{aligned}
-\frac{dS}{dt} &amp;= (b N + \omega R) - \delta S - \beta V S  \\
-\frac{dI}{dt} &amp;= \beta (V_F + V_Z) S - (\gamma + \delta_I + \delta)I
-\\
-\frac{dR}{dt} &amp;= \gamma I - (\omega + \delta) R \\
-\frac{dV_F}{dt} &amp;= (\sigma I + \epsilon V_Z) - c \lambda V Z_F - \mu
-V_F P - \delta_V V \\
-\frac{dV_Z}{dt} &amp;= \rho Z_V - \mu g V_Z P - \epsilon Z_V - \delta_V
-V \\
-\frac{dP}{dt} &amp;= \tau \mu (V_F + g V_Z) P - \delta_P P\\
-\frac{dZ_F}{dt} &amp;= \eta \alpha X (Z_F + Z_V) - \lambda V Z_F -
-\delta_Z Z_F\\
-\frac{dZ_V}{dt} &amp;= \lambda V Z_F - \delta_Z Z_V\\
-\frac{dX}{dt} &amp;= r X (1 - \frac{X}{K}) - \alpha X (Z_V + Z_F)\\
+\dot S &amp;= bN + \omega R - \delta S - \lambda_H S,\\
+\dot I &amp;= \lambda_H S - (\gamma + \delta_I + \delta) I,\\
+\dot R &amp;= \gamma I - (\omega + \delta) R.
 \end{aligned}
 \]</span></p>
+<p>Vibrio &amp; phage: <span class="math display">\[
+\begin{aligned}
+\dot V_F &amp;= \sigma I \;-\; \delta_V V_F \;-\; \underbrace{\mu V_F
+P}_{\text{phage}} \;-\; \underbrace{c_\lambda \lambda V_F
+Z_F}_{\text{colonize}} \;+\; \underbrace{\epsilon
+V_Z}_{\text{detach}},\\
+\dot V_Z &amp;= c_\lambda \lambda V_F Z_F \;-\; \epsilon V_Z \;-\;
+\delta_V V_Z \;-\; \underbrace{g\,\mu V_Z P}_{\text{phage on attached
+(M3 only)}},\\
+\dot P   &amp;= \tau \mu  ( V_F + g\, V_Z ) P \;-\; \delta_P P.
+\end{aligned}
+\]</span></p>
+<p>Zooplankton &amp; phytoplankton: <span class="math display">\[
+\begin{aligned}
+\dot Z_F &amp;= \eta \alpha X (Z_F + Z_V)  + \kappa_Z Z_V - ( \lambda
+V_F + \delta_Z) Z_F,\\
+\dot Z_V &amp;= \lambda V_F Z_F - ( \kappa_Z + \delta_Z) Z_V,\\
+\dot X   &amp;= r X \Bigl(1 - \frac{X}{K}\Bigr) - \alpha X (Z_F + Z_V).
+\end{aligned}
+\]</span></p>
+<p>Special cases:</p>
 <ul>
-<li><span class="math inline">\(bN\)</span> is the birth/immigration,
-where the total number of human population is <span class="math inline">\(N = S+ I +R\)</span></li>
-<li>$$</li>
+<li><strong>M0</strong>: set <span class="math inline">\(Z_F=Z_V=X=P=V_Z=0\)</span>; <span class="math inline">\(\dot V_F = \sigma I - \delta_V V_F\)</span>.</li>
+<li><strong>M1</strong>: set <span class="math inline">\(P=0\)</span>
+and <span class="math inline">\(g=0\)</span>.</li>
+<li><strong>M2</strong>: set <span class="math inline">\(Z_F=Z_V=X=V_Z=0\)</span>.</li>
+<li><strong>M3</strong>: as above (both).</li>
 </ul>
-<div id="parameters" class="section level3">
-<h3>Parameters</h3>
-<table>
-<colgroup>
-<col width="4%" />
-<col width="9%" />
-<col width="50%" />
-<col width="27%" />
-<col width="5%" />
-<col width="2%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center">Type</th>
-<th align="center">Parameter</th>
-<th align="left">Description</th>
-<th align="center">Dimensions</th>
-<th align="center">Estimate</th>
-<th align="center">Reference</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">SIR</td>
-<td align="center"><span class="math inline">\(b\)</span></td>
-<td align="left">Natural birth/immigration rate of human</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(6.85 \times 10
-^{-5}\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="even">
-<td align="center">SIR</td>
-<td align="center"><span class="math inline">\(\delta\)</span></td>
-<td align="left">Natural death/migration rate of human</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(3.8 \times 10
-^{-5}\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="odd">
-<td align="center">SIR</td>
-<td align="center"><span class="math inline">\(\beta\)</span></td>
-<td align="left">Transmission rate via bacteria</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.214\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="even">
-<td align="center">SIR</td>
-<td align="center"><span class="math inline">\(\omega\)</span></td>
-<td align="left">Rate of immunity loss of recovered individuals</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.00092\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="odd">
-<td align="center">SIR</td>
-<td align="center"><span class="math inline">\(\gamma\)</span></td>
-<td align="left">Recovery rate of infected human</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.2\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="even">
-<td align="center">SIR</td>
-<td align="center"><span class="math inline">\(\delta_I\)</span></td>
-<td align="left">Induced death rate caused by infection</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.013\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="odd">
-<td align="center">Vibriophage</td>
-<td align="center"><span class="math inline">\(\sigma\)</span></td>
-<td align="left">Bacterial shedding rate by infected human</td>
-<td align="center">cells L<sup>-1</sup> day<sup>-1</sup> per person</td>
-<td align="center"><span class="math inline">\(10\)</span>-<span class="math inline">\(10^{4}\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="even">
-<td align="center">Vibriophage</td>
-<td align="center"><span class="math inline">\(\rho\)</span></td>
-<td align="left">Bacterial shedding rate by infected zooplankton</td>
-<td align="center">cells L<sup>-1</sup> day<sup>-1</sup> per mg</td>
-<td align="center">XX</td>
-<td align="center">XX</td>
-</tr>
-<tr class="odd">
-<td align="center">Vibriophage</td>
-<td align="center"><span class="math inline">\(\mu\)</span></td>
-<td align="left">Encounter rate of Vibrio and phage</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(1.4\times10^{-9}\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="even">
-<td align="center">Vibriophage</td>
-<td align="center"><span class="math inline">\(\delta_V\)</span></td>
-<td align="left">Death/washout rate of Vibrio in the reservoir</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.33\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="odd">
-<td align="center">Vibriophage</td>
-<td align="center"><span class="math inline">\(\tau\)</span></td>
-<td align="left">Conversion coefficient from Vibrio to phage</td>
-<td align="center">Virions per cell</td>
-<td align="center"><span class="math inline">\(80\)</span> - <span class="math inline">\(100\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="even">
-<td align="center">Vibriophage</td>
-<td align="center"><span class="math inline">\(\delta_P\)</span></td>
-<td align="left">Phage decay rate</td>
-<td align="center">Virions per day</td>
-<td align="center"><span class="math inline">\(0.5\)</span>-<span class="math inline">\(7.9\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="odd">
-<td align="center">Plankton</td>
-<td align="center"><span class="math inline">\(\lambda\)</span></td>
-<td align="left">Encounter rate of Vibrio and zooplankton</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.005\)</span> - <span class="math inline">\(0.1\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="even">
-<td align="center">Plankton</td>
-<td align="center"><span class="math inline">\(c\)</span></td>
-<td align="left">Colonization efficient of bacteria in zooplankton</td>
-<td align="center">cells (mg) L <sup>-1</sup></td>
-<td align="center"><span class="math inline">\(5 \times
-10^{-7}\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="odd">
-<td align="center">Plankton</td>
-<td align="center"><span class="math inline">\(\eta\)</span></td>
-<td align="left">Conversion coefficient from phytoplankton to
-zooplankton</td>
-<td align="center">NA</td>
-<td align="center"><span class="math inline">\(0.6\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="even">
-<td align="center">Plankton</td>
-<td align="center"><span class="math inline">\(\alpha\)</span></td>
-<td align="left">Predation rate of zooplankton and phytoplankton</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.4\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="odd">
-<td align="center">Plankton</td>
-<td align="center"><span class="math inline">\(\delta_Z\)</span></td>
-<td align="left">Death rate of zooplankton</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.06\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="even">
-<td align="center">Plankton</td>
-<td align="center"><span class="math inline">\(r\)</span></td>
-<td align="left">Phytoplankton intrinsic growth rate</td>
-<td align="center">day<sup>-1</sup></td>
-<td align="center"><span class="math inline">\(0.5\)</span></td>
-<td align="center">XX</td>
-</tr>
-<tr class="odd">
-<td align="center">Plankton</td>
-<td align="center"><span class="math inline">\(K\)</span></td>
-<td align="left">Phytoplankton carrying capacity</td>
-<td align="center">mg L <sup>-1</sup></td>
-<td align="center"><span class="math inline">\(1\)</span></td>
-<td align="center">XX</td>
-</tr>
-</tbody>
-</table>
 </div>
+<div id="parameters-key-ones" class="section level2">
+<h2>Parameters (key ones)</h2>
+<ul>
+<li>Human: <span class="math inline">\(\beta\)</span> (scale), <span class="math inline">\(h_V\)</span> (half-saturation), <span class="math inline">\(\gamma, \omega, b, \delta, \delta_I\)</span>.</li>
+<li>Vibrio: <span class="math inline">\(\sigma\)</span> (shedding),
+<span class="math inline">\(\delta_V\)</span> (loss).</li>
+<li>Phage: <span class="math inline">\(\mu\)</span> (adsorption), <span class="math inline">\(\tau\)</span> (burst), <span class="math inline">\(\delta_P\)</span> (decay), <span class="math inline">\(g\in[0,1]\)</span> (phage access to <span class="math inline">\(V_Z\)</span>; M3).</li>
+<li>Plankton: <span class="math inline">\(\lambda\)</span> (VF–ZF
+encounter), <span class="math inline">\(c_\lambda\)</span> (colonization
+efficiency), <span class="math inline">\(\epsilon\)</span> (detachment),
+<span class="math inline">\(\eta,\alpha,\delta_Z,r,K,\kappa_Z\)</span>.</li>
+<li>Infectivity mixing: <span class="math inline">\(\theta\)</span>
+(contribution of <span class="math inline">\(V_Z\)</span> to FOI).</li>
+</ul>
+<p>Units are kept consistent with day<span class="math inline">\(^{-1}\)</span> rates; <span class="math inline">\(\beta\)</span> and <span class="math inline">\(h_V\)</span> together control the scale/saturation
+of human FOI.</p>
+</div>
+<div id="from-model-to-data-what-we-compare" class="section level2">
+<h2>From model to data (what we compare)</h2>
+<p>We compare <strong>daily incidence</strong> (new infections), not
+<span class="math inline">\(I(t)\)</span>: <span class="math display">\[
+E[Y_t] \;=\; \rho \;\lambda_H(t) S(t),
+\]</span> where <span class="math inline">\(\rho\)</span> is a
+reporting/scale factor fit by maximum likelihood for each model.</p>
+</div>
+<div id="scoring" class="section level2">
+<h2>Scoring</h2>
+<ul>
+<li><strong>RMSE</strong> on daily cases (lower is better).</li>
+<li><strong>Negative Binomial log score</strong> with fixed dispersion
+<span class="math inline">\(\phi\)</span> (higher is better).<br />
+Both are implemented in <code>observe_and_score.R</code>: ```r ex &lt;-
+expected_daily_cases(sim) rho &lt;- fit_rho_daily(obs_daily, sim,
+start_date) rmse_daily(obs<span class="math inline">\(cases, rho *
+ex\)</span>mu) nb_logscore_daily(obs<span class="math inline">\(cases,
+rho * ex\)</span>mu, phi = 10)</li>
+</ul>
 </div>
 </div>
 
