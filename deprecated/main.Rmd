@@ -12,8 +12,8 @@ Without half-saturation
 
 $$
 \begin{aligned}
-\frac{dS}{dt} &= b N + \omega R - \delta S - \beta V S  \\
-\frac{dI}{dt} &= \beta V S - (\gamma + \delta_I + \delta)I \\
+\frac{dS}{dt} &= (b N + \omega R) - \delta S - \beta V S  \\
+\frac{dI}{dt} &= \beta (V_F) S - (\gamma + \delta_I + \delta)I \\
 \frac{dR}{dt} &= \gamma I - (\omega + \delta) R \\
 \frac{dV}{dt} &= \sigma I + \rho Z_V - c \lambda V Z_F - \mu V P - \delta_V V \\
 \frac{dP}{dt} &= \tau \mu VP - \delta_P P\\
@@ -71,17 +71,8 @@ Plankton | $h_m$ | Half-saturation rate constant of bacterial-zooplankton associ
 Plankton | $h_X$ | Half-saturation rate constant of zooplankton and phytoplankton encountering | cells (mg) L ^-1^ | $0.6$  | XX
 
 
-# Run the model 
 
-```{r}
-source(here::here("scripts/main.R"))
-```
-
-
-
-
-
-With half-saturation
+## (DEPRECATED) 
 
 $$
 \begin{aligned}
