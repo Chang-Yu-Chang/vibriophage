@@ -1,113 +1,110 @@
-# vibriophage — SIRB + (phage | plankton) minimal models
+# Minimal SIR–Vibrio–Phage–Zooplankton Model
 
-This repository simulates cholera dynamics by coupling a human **SIR** model to environmental **Vibrio** and, depending on the variant, to **vibriophages** and **zooplankton**. We use a short, single **zooplankton-associated Vibrio** pool \(V_Z\) (no k-stage chain); attached cells detach back to \(V_F\) at rate \(\epsilon\). The force of infection (FOI) for humans saturates with Vibrio concentration.
+This model couples human SIR dynamics with *Vibrio cholerae*, phage, and a zooplankton refuge. It formalizes two ideas:
 
-Here’s your model description in clean **Markdown** format with equations in LaTeX blocks. You can paste this directly into your `README.md` and GitHub will render the math if you use a LaTeX renderer (e.g. with MathJax via GitHub Pages, Quarto, or JupyterBook).
+1. **Refuge:** *Vibrio* attached to zooplankton (VZ) are shielded from phage;
+2. **Temporary protection after detachment:** a fraction of released cells enter a transient, free-living **immune** compartment (VI) before reverting to ordinary free-living *Vibrio* (VF).
 
----
+The key control is **$g\in[0,1]$**, which sets **how immune VI is to phage**:
 
-# Model Equations
+* $g=1$: VI fully immune (no phage killing of VI)
+* $g=0$: VI not immune (VI killed like VF)
 
-We track human hosts $(S,I,R)$, free Vibrio $(V_F)$, zooplankton-associated Vibrio $(V_Z)$, optionally immune Vibrio $(V_I)$, and phage $(P)$.
-
-Total host population:
-
-```math
-N = S + I + R
-```
-
-**Force of infection (per susceptible host):**
-
-```math
-\lambda_H = \frac{\beta \, (V_F + \theta (V_Z + V_I))}{1 + h_V \, (V_F + \theta (V_Z + V_I))}
-```
+We typically initialize with **zooplankton-associated *Vibrio*** (VZ) and **resident phage** present; VZ do not directly infect humans in the minimal presentation (set $\theta=0$, but this can be relaxed).
 
 ---
 
-## Host dynamics
+## State variables
 
-```math
+* $S,I,R$: susceptible, infected, recovered humans
+* $V_F$: free-living *Vibrio*
+* $V_Z$: zooplankton-associated *Vibrio* (refuge)
+* $V_I$: released, **temporarily immune** free-living *Vibrio*
+* $P$: lytic phage
+
+---
+
+## Force of infection (FOI)
+
+Effective *Vibrio* for infection:
+
+$$
+V_{\text{eff}} \;=\; V_F \;+\; V_I \;+\; \theta\,V_Z,
+$$
+
+and (minimal linear form used in code)
+
+$$
+\lambda_H \;=\; \beta\, V_{\text{eff}}.
+$$
+
+*(If desired, this can be replaced by a saturating or type-III form; see commented lines in the code.)*
+
+---
+
+## Model equations
+
+Human SIR:
+
+$$
 \begin{aligned}
-\frac{dS}{dt} &= bN + \omega R - \delta S - \lambda_H S \\
-\frac{dI}{dt} &= \lambda_H S - (\gamma + \delta_I + \delta) I \\
-\frac{dR}{dt} &= \gamma I - (\omega + \delta) R
+\frac{dS}{dt} &= b\,N + \omega R - \delta S - \lambda_H S, \\
+\frac{dI}{dt} &= \lambda_H S - (\gamma + \delta_I + \delta) I, \\
+\frac{dR}{dt} &= \gamma I - (\omega + \delta) R,\qquad N=S+I+R.
 \end{aligned}
-```
+$$
+
+Vibrio on zooplankton (refuge; **no** phage killing here):
+
+$$
+\frac{dV_Z}{dt} \;=\; \lambda\,V_F\,Z_0 \;-\; \epsilon\,V_Z \;-\; \delta_V\,V_Z.
+$$
+
+Released, **temporarily immune** Vibrio (phage loss scaled by $1-g$):
+
+$$
+\frac{dV_I}{dt} \;=\; \epsilon\,V_Z \;-\; \kappa\,V_I \;-\; (1-g)\,\mu\,V_I\,P \;-\; \delta_V\,V_I.
+$$
+
+Free-living Vibrio (fully phage-susceptible):
+
+$$
+\frac{dV_F}{dt} \;=\; \sigma\,I \;+\; \kappa\,V_I \;-\; \lambda\,V_F\,Z_0 \;-\; \mu\,V_F\,P \;-\; \delta_V\,V_F.
+$$
+
+Phage (replicate on $V_F$ and on $V_I$ only via its **residual** susceptibility $1-g$; no growth on $V_Z$):
+
+$$
+\frac{dP}{dt} \;=\; \tau\,\mu\left( V_F + (1-g)\,V_I \right) P \;-\; \delta_P\,P.
+$$
 
 ---
 
-## Vibrio dynamics (base terms)
+## Parameters (subset; units per code)
 
-Shedding into water:
-
-```math
-\sigma I
-```
-
-Colonization to zooplankton:
-
-```math
-\text{col\_to\_Z} = c_\lambda \, \lambda \, V_F Z_0
-```
-
-```math
-\begin{aligned}
-\frac{dV_F}{dt} &= \sigma I - \delta_V V_F - \text{col\_to\_Z} \\
-\frac{dV_Z}{dt} &= \text{col\_to\_Z} - \epsilon V_Z - \delta_V V_Z
-\end{aligned}
-```
+* $\beta$ (L$^{-1}$,day$^{-1}$): infection scaling; $\theta$ (–): contribution of $V_Z$ to FOI (set to 0 in minimal runs).
+* $\lambda$ (day$^{-1}$), $Z_0$ (–): VF–zooplankton encounters with constant zooplankton availability.
+* $\epsilon$ (day$^{-1}$): **detachment** from $V_Z$ into $V_I$.
+* $\kappa$ (day$^{-1}$): **loss of protection** $V_I \rightarrow V_F$ (mean protected time $\approx 1/\kappa$).
+* $g \in [0,1]$: **immunity strength of $V_I$** against phage ( $g=1$ immune; $g=0$ none ).
+* $\mu$ (L virion$^{-1}$ day$^{-1}$): phage adsorption; $\tau$: burst size; $\delta_P$ (day$^{-1}$): phage decay.
+* $\sigma$ (cells host$^{-1}$ day$^{-1}$): shedding from infected humans; $\delta_V$ (day$^{-1}$): *Vibrio* loss/washout.
+* $b,\delta,\omega,\gamma,\delta_I$: human demography and recovery.
 
 ---
 
-## Case 1. With zooplankton protection
+## How we simulate (one paragraph)
 
-When detaching, zooplankton-associated Vibrio enter a **protected state** $(V_I)$, immune to phage for $\sim 12h$:
-
-```math
-\begin{aligned}
-\frac{dV_I}{dt} &= \epsilon V_Z - \kappa_I V_I - \delta_V V_I \\
-\frac{dV_F}{dt} &+= \kappa_I V_I
-\end{aligned}
-```
-
-Phage kill only free Vibrio:
-
-```math
-\begin{aligned}
-\frac{dV_F}{dt} &-= \mu V_F P \\
-\frac{dP}{dt} &= \tau \mu V_F P - \delta_P P
-\end{aligned}
-```
+We implement the ODEs in R with **deSolve**, using a constant zooplankton availability $Z_0$ to keep the ecology minimal. Runs typically start with a **zooplankton-associated seed** ($V_Z>0$) and **resident phage** present; humans start largely susceptible. We compare two scenarios by adjusting a **single parameter**: **$g=0$** (no post-detachment immunity; $V_I$ phage-susceptible) versus **$g=1$** (full immunity; $V_I$ phage-immune). The plotting helper `expected_daily()` uses the **same FOI** as the ODE to compute expected daily infections $\lambda_H S$.
 
 ---
 
-## Case 2. No protection
+## Main qualitative results (what the model shows)
 
-Detachment feeds directly back to free Vibrio:
+* **No immunity ($g=0$)**: With resident phage, *all* free-living *Vibrio* (VF and VI) are phage prey. Phage expand and purge *Vibrio*, so **infections crash to zero** after a small transient—**no recurring outbreaks**.
+* **With immunity ($g=1$)**: VI forms a **transient free-living refuge** that reseeds VF ($V_I \xrightarrow{\kappa} V_F$). Phage bloom on VF and crash it, but VI persists (protected) and **restarts the cycle**, yielding **predator–prey oscillations** (VF–P) and **recurring infection peaks**.
+* **Role of detachment ($\epsilon$)**: Smaller $\epsilon$ (slower release from $V_Z$) acts like a slow-release reservoir, **broadening conditions** for multiple waves; larger $\epsilon$ shortens protection and favors a single-peak crash.
 
-```math
-\frac{dV_F}{dt} += \epsilon V_Z
-```
-
-Phage kill both free and zooplankton-associated Vibrio:
-
-```math
-\begin{aligned}
-\frac{dV_F}{dt} &-= \mu V_F P \\
-\frac{dV_Z}{dt} &-= \mu V_Z P \\
-\frac{dP}{dt} &= \tau \mu (V_F + V_Z) P - \delta_P P
-\end{aligned}
-```
+> **Take-home:** In a phage-present environment, **zooplankton refuge alone is not enough** to generate recurrent outbreaks if VZ does not directly infect; **post-detachment immunity (VI, controlled by $g$) is necessary** to sustain epidemic cycles.
 
 ---
-
-⚠️ Notes:
-
-* $V_I$ appears only in the **protection** scenario.
-* In protection, phage kill **only $V_F$**.
-* In no-protection, phage kill both $V_F$ and $V_Z$.
-* Colonization ($\text{col\_to\_Z}$) always depends on $V_F$ and fixed $Z_0$.
-
----
-
-👉 Do you also want me to add a **parameter table** (with biological interpretation and default values from your code) in the README? That would make it more self-contained for readers.
