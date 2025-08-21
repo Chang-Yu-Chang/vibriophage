@@ -361,110 +361,83 @@ depending on the variant, to <strong>vibriophages</strong> and
 <strong>zooplankton-associated Vibrio</strong> pool <span class="math inline">\(V_Z\)</span> (no k-stage chain); attached cells
 detach back to <span class="math inline">\(V_F\)</span> at rate <span class="math inline">\(\epsilon\)</span>. The force of infection (FOI)
 for humans saturates with Vibrio concentration.</p>
-<div id="state-variables" class="section level2">
-<h2>State variables</h2>
-<ul>
-<li>Humans: <span class="math inline">\(S, I, R\)</span> with <span class="math inline">\(N=S+I+R\)</span>.</li>
-<li>Vibrio &amp; phage: <span class="math inline">\(V_F\)</span>
-(free-living Vibrio), <span class="math inline">\(V_Z\)</span>
-(zooplankton-associated Vibrio), <span class="math inline">\(P\)</span>
-(phage).</li>
-<li>Plankton: <span class="math inline">\(Z_F\)</span> (free
-zooplankton), <span class="math inline">\(Z_V\)</span>
-(Vibrio-associated zooplankton), <span class="math inline">\(X\)</span>
-(phytoplankton).</li>
-</ul>
+<p>Here’s your model description in clean <strong>Markdown</strong>
+format with equations in LaTeX blocks. You can paste this directly into
+your <code>README.md</code> and GitHub will render the math if you use a
+LaTeX renderer (e.g. with MathJax via GitHub Pages, Quarto, or
+JupyterBook).</p>
+<hr />
 </div>
-<div id="model-ladder" class="section level2">
-<h2>Model ladder</h2>
-<ul>
-<li><strong>M0 (SIRB)</strong>: SIR + <span class="math inline">\(V_F\)</span> (no <span class="math inline">\(V_Z\)</span>, no <span class="math inline">\(P\)</span>).</li>
-<li><strong>M1 (Plankton-only)</strong>: adds <span class="math inline">\(V_Z, Z_F, Z_V, X\)</span>; no phage.</li>
-<li><strong>M2 (Phage-only)</strong>: adds <span class="math inline">\(P\)</span>; no plankton (<span class="math inline">\(V_Z=0\)</span>).</li>
-<li><strong>M3 (Both)</strong>: includes <span class="math inline">\(V_Z\)</span> <strong>and</strong> <span class="math inline">\(P\)</span>. <span class="math inline">\(V_Z\)</span> can be partially phage-susceptible
-via parameter <span class="math inline">\(g\)</span>.</li>
-</ul>
+<div id="model-equations" class="section level1">
+<h1>Model Equations</h1>
+<p>We track human hosts <span class="math inline">\((S,I,R)\)</span>,
+free Vibrio <span class="math inline">\((V_F)\)</span>,
+zooplankton-associated Vibrio <span class="math inline">\((V_Z)\)</span>, optionally immune Vibrio <span class="math inline">\((V_I)\)</span>, and phage <span class="math inline">\((P)\)</span>.</p>
+<p>Total host population:</p>
+<pre class="math"><code>N = S + I + R</code></pre>
+<p><strong>Force of infection (per susceptible host):</strong></p>
+<pre class="math"><code>\lambda_H = \frac{\beta \, (V_F + \theta (V_Z + V_I))}{1 + h_V \, (V_F + \theta (V_Z + V_I))}</code></pre>
+<hr />
+<div id="host-dynamics" class="section level2">
+<h2>Host dynamics</h2>
+<pre class="math"><code>\begin{aligned}
+\frac{dS}{dt} &amp;= bN + \omega R - \delta S - \lambda_H S \\
+\frac{dI}{dt} &amp;= \lambda_H S - (\gamma + \delta_I + \delta) I \\
+\frac{dR}{dt} &amp;= \gamma I - (\omega + \delta) R
+\end{aligned}</code></pre>
+<hr />
 </div>
-<div id="dynamics-m3-both-model-specialized-models-drop-the-absent-terms" class="section level2">
-<h2>Dynamics (M3 “both” model; specialized models drop the absent
-terms)</h2>
-<p>Human FOI (saturating): <span class="math display">\[
-\lambda_H(t) \;=\; \frac{\beta \, (V_F + \theta V_Z)}{1 + h_V \, (V_F +
-\theta V_Z)}.
-\]</span></p>
-<p>Humans: <span class="math display">\[
-\begin{aligned}
-\dot S &amp;= bN + \omega R - \delta S - \lambda_H S,\\
-\dot I &amp;= \lambda_H S - (\gamma + \delta_I + \delta) I,\\
-\dot R &amp;= \gamma I - (\omega + \delta) R.
-\end{aligned}
-\]</span></p>
-<p>Vibrio &amp; phage: <span class="math display">\[
-\begin{aligned}
-\dot V_F &amp;= \sigma I \;-\; \delta_V V_F \;-\; \underbrace{\mu V_F
-P}_{\text{phage}} \;-\; \underbrace{c_\lambda \lambda V_F
-Z_F}_{\text{colonize}} \;+\; \underbrace{\epsilon
-V_Z}_{\text{detach}},\\
-\dot V_Z &amp;= c_\lambda \lambda V_F Z_F \;-\; \epsilon V_Z \;-\;
-\delta_V V_Z \;-\; \underbrace{g\,\mu V_Z P}_{\text{phage on attached
-(M3 only)}},\\
-\dot P   &amp;= \tau \mu  ( V_F + g\, V_Z ) P \;-\; \delta_P P.
-\end{aligned}
-\]</span></p>
-<p>Zooplankton &amp; phytoplankton: <span class="math display">\[
-\begin{aligned}
-\dot Z_F &amp;= \eta \alpha X (Z_F + Z_V)  + \kappa_Z Z_V - ( \lambda
-V_F + \delta_Z) Z_F,\\
-\dot Z_V &amp;= \lambda V_F Z_F - ( \kappa_Z + \delta_Z) Z_V,\\
-\dot X   &amp;= r X \Bigl(1 - \frac{X}{K}\Bigr) - \alpha X (Z_F + Z_V).
-\end{aligned}
-\]</span></p>
-<p>Special cases:</p>
-<ul>
-<li><strong>M0</strong>: set <span class="math inline">\(Z_F=Z_V=X=P=V_Z=0\)</span>; <span class="math inline">\(\dot V_F = \sigma I - \delta_V V_F\)</span>.</li>
-<li><strong>M1</strong>: set <span class="math inline">\(P=0\)</span>
-and <span class="math inline">\(g=0\)</span>.</li>
-<li><strong>M2</strong>: set <span class="math inline">\(Z_F=Z_V=X=V_Z=0\)</span>.</li>
-<li><strong>M3</strong>: as above (both).</li>
-</ul>
+<div id="vibrio-dynamics-base-terms" class="section level2">
+<h2>Vibrio dynamics (base terms)</h2>
+<p>Shedding into water:</p>
+<pre class="math"><code>\sigma I</code></pre>
+<p>Colonization to zooplankton:</p>
+<pre class="math"><code>\text{col\_to\_Z} = c_\lambda \, \lambda \, V_F Z_0</code></pre>
+<pre class="math"><code>\begin{aligned}
+\frac{dV_F}{dt} &amp;= \sigma I - \delta_V V_F - \text{col\_to\_Z} \\
+\frac{dV_Z}{dt} &amp;= \text{col\_to\_Z} - \epsilon V_Z - \delta_V V_Z
+\end{aligned}</code></pre>
+<hr />
 </div>
-<div id="parameters-key-ones" class="section level2">
-<h2>Parameters (key ones)</h2>
-<ul>
-<li>Human: <span class="math inline">\(\beta\)</span> (scale), <span class="math inline">\(h_V\)</span> (half-saturation), <span class="math inline">\(\gamma, \omega, b, \delta, \delta_I\)</span>.</li>
-<li>Vibrio: <span class="math inline">\(\sigma\)</span> (shedding),
-<span class="math inline">\(\delta_V\)</span> (loss).</li>
-<li>Phage: <span class="math inline">\(\mu\)</span> (adsorption), <span class="math inline">\(\tau\)</span> (burst), <span class="math inline">\(\delta_P\)</span> (decay), <span class="math inline">\(g\in[0,1]\)</span> (phage access to <span class="math inline">\(V_Z\)</span>; M3).</li>
-<li>Plankton: <span class="math inline">\(\lambda\)</span> (VF–ZF
-encounter), <span class="math inline">\(c_\lambda\)</span> (colonization
-efficiency), <span class="math inline">\(\epsilon\)</span> (detachment),
-<span class="math inline">\(\eta,\alpha,\delta_Z,r,K,\kappa_Z\)</span>.</li>
-<li>Infectivity mixing: <span class="math inline">\(\theta\)</span>
-(contribution of <span class="math inline">\(V_Z\)</span> to FOI).</li>
-</ul>
-<p>Units are kept consistent with day<span class="math inline">\(^{-1}\)</span> rates; <span class="math inline">\(\beta\)</span> and <span class="math inline">\(h_V\)</span> together control the scale/saturation
-of human FOI.</p>
+<div id="case-1.-with-zooplankton-protection" class="section level2">
+<h2>Case 1. With zooplankton protection</h2>
+<p>When detaching, zooplankton-associated Vibrio enter a
+<strong>protected state</strong> <span class="math inline">\((V_I)\)</span>, immune to phage for <span class="math inline">\(\sim 12h\)</span>:</p>
+<pre class="math"><code>\begin{aligned}
+\frac{dV_I}{dt} &amp;= \epsilon V_Z - \kappa_I V_I - \delta_V V_I \\
+\frac{dV_F}{dt} &amp;+= \kappa_I V_I
+\end{aligned}</code></pre>
+<p>Phage kill only free Vibrio:</p>
+<pre class="math"><code>\begin{aligned}
+\frac{dV_F}{dt} &amp;-= \mu V_F P \\
+\frac{dP}{dt} &amp;= \tau \mu V_F P - \delta_P P
+\end{aligned}</code></pre>
+<hr />
 </div>
-<div id="from-model-to-data-what-we-compare" class="section level2">
-<h2>From model to data (what we compare)</h2>
-<p>We compare <strong>daily incidence</strong> (new infections), not
-<span class="math inline">\(I(t)\)</span>: <span class="math display">\[
-E[Y_t] \;=\; \rho \;\lambda_H(t) S(t),
-\]</span> where <span class="math inline">\(\rho\)</span> is a
-reporting/scale factor fit by maximum likelihood for each model.</p>
-</div>
-<div id="scoring" class="section level2">
-<h2>Scoring</h2>
+<div id="case-2.-no-protection" class="section level2">
+<h2>Case 2. No protection</h2>
+<p>Detachment feeds directly back to free Vibrio:</p>
+<pre class="math"><code>\frac{dV_F}{dt} += \epsilon V_Z</code></pre>
+<p>Phage kill both free and zooplankton-associated Vibrio:</p>
+<pre class="math"><code>\begin{aligned}
+\frac{dV_F}{dt} &amp;-= \mu V_F P \\
+\frac{dV_Z}{dt} &amp;-= \mu V_Z P \\
+\frac{dP}{dt} &amp;= \tau \mu (V_F + V_Z) P - \delta_P P
+\end{aligned}</code></pre>
+<hr />
+<p>⚠️ Notes:</p>
 <ul>
-<li><strong>RMSE</strong> on daily cases (lower is better).</li>
-<li><strong>Negative Binomial log score</strong> with fixed dispersion
-<span class="math inline">\(\phi\)</span> (higher is better).<br />
-Both are implemented in <code>observe_and_score.R</code>: ```r ex &lt;-
-expected_daily_cases(sim) rho &lt;- fit_rho_daily(obs_daily, sim,
-start_date) rmse_daily(obs<span class="math inline">\(cases, rho *
-ex\)</span>mu) nb_logscore_daily(obs<span class="math inline">\(cases,
-rho * ex\)</span>mu, phi = 10)</li>
+<li><span class="math inline">\(V_I\)</span> appears only in the
+<strong>protection</strong> scenario.</li>
+<li>In protection, phage kill <strong>only <span class="math inline">\(V_F\)</span></strong>.</li>
+<li>In no-protection, phage kill both <span class="math inline">\(V_F\)</span> and <span class="math inline">\(V_Z\)</span>.</li>
+<li>Colonization (<span class="math inline">\(\text{col\_to\_Z}\)</span>) always depends on
+<span class="math inline">\(V_F\)</span> and fixed <span class="math inline">\(Z_0\)</span>.</li>
 </ul>
+<hr />
+<p>👉 Do you also want me to add a <strong>parameter table</strong>
+(with biological interpretation and default values from your code) in
+the README? That would make it more self-contained for readers.</p>
 </div>
 </div>
 
